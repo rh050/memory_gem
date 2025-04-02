@@ -1,0 +1,18 @@
+{
+  "app_title": "MemoryGem",
+  "welcome": "Welcome, {name}!",
+  "login_title": "Login",
+  "enter_name": "Enter your name",
+  "continue": "Continue",
+  "start_game": "Start Game",
+  "how_to_play": "How to Play",
+  "store": "Store",
+  "achievements": "Achievements",
+  "daily_challenge": "Daily Challenge",
+  "select_language": "Select Language",
+  "score": "Score: {score}",
+  "time": "Time: {time} s",
+  "level": "Level {level}",
+  "player_stats": "Player Stats",
+  "accuracy": "Accuracy: {percent}%"
+}
