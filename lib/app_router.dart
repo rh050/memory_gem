@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:memory_gem/screens/tutorial_dialog.dart';
 import 'screens/splash_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
@@ -21,12 +22,10 @@ class AppRouter {
       GoRoute(path: '/store', builder: (context, state) => const StoreScreen()),
       GoRoute(path: '/achievements', builder: (context, state) => const AchievementsScreen()),
       GoRoute(path: '/stats', builder: (context, state) => const PlayerStatsScreen()),
+      GoRoute(path: '/tutorial', builder: (context, state) =>  TutorialDialog(),),
       GoRoute(
-        path: '/daily_challenge',
-        builder: (context, state) {
-          final language = state.extra as String? ?? 'Hebrew';
-          return DailyChallengeScreen(language: language);
-        },
+        path: '/daily',
+        builder: (context, state) => const DailyChallengeScreen(),
       ),
     ],
   );

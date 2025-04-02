@@ -23,7 +23,8 @@ class _LanguageScreenState extends State<LanguageScreen> {
     setState(() {
       selectedLocale = locale;
     });
-    context.go('/home');
+    final languageString = locale.languageCode == 'he' ? 'Hebrew' : 'English';
+    context.go('/home', extra: languageString);
   }
 
   @override

@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../utils/gematria.dart';
 import '../utils/words.dart';
 
@@ -51,16 +52,15 @@ class _GameQuestionState extends State<GameQuestion> with SingleTickerProviderSt
 
   void _generateQuestion() {
     final random = Random();
-    final letters = widget.language == 'Hebrew'
-        ? gematriaLetters.keys.toList()
-        : englishGematriaLetters.keys.toList();
-
-    final words = widget.language == 'Hebrew'
-        ? hebrewWords
-        : englishWords;
+    final words = widget.language == 'English' ? englishWords : hebrewWords;
 
     if (widget.level == 1) {
-      word = letters[random.nextInt(letters.length)];
+      final lettersMap = widget.language == 'English'
+          ? englishGematriaLetters
+          : gematriaLetters;
+      final letters = lettersMap.keys.toList();
+      final letter = letters[random.nextInt(letters.length)];
+      word = letter;
     } else {
       word = words[random.nextInt(words.length)];
     }
@@ -80,10 +80,10 @@ class _GameQuestionState extends State<GameQuestion> with SingleTickerProviderSt
     final isCorrect = userAnswer == correctValue;
 
     if (isCorrect) {
-      feedback = "✔";
+      feedback = tr('correct');
       feedbackColor = Colors.green;
     } else {
-      feedback = "✘";
+      feedback = tr('wrong');
       feedbackColor = Colors.red;
     }
 
@@ -96,7 +96,7 @@ class _GameQuestionState extends State<GameQuestion> with SingleTickerProviderSt
   }
 
   String getHint() {
-    final map = widget.language == 'Hebrew' ? gematriaLetters : englishGematriaLetters;
+    final map = widget.language == 'English' ? englishGematriaLetters : gematriaLetters;
     return word.split('').map((l) => "$l=${map[l]}").join(' + ');
   }
 
@@ -126,14 +126,14 @@ class _GameQuestionState extends State<GameQuestion> with SingleTickerProviderSt
                   child: TextField(
                     controller: _answerController,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: 'התשובה שלך'),
+                    decoration: InputDecoration(labelText: tr('your_answer')),
                     onSubmitted: (_) => _submitAnswer(),
                   ),
                 ),
                 const SizedBox(width: 12),
                 ElevatedButton(
                   onPressed: _submitAnswer,
-                  child: const Text('שלח'),
+                  child: Text(tr('submit')),
                 ),
               ],
             ),
@@ -146,7 +146,7 @@ class _GameQuestionState extends State<GameQuestion> with SingleTickerProviderSt
                   });
                   if (widget.onUseHint != null) widget.onUseHint!();
                 },
-                child: Text("הצג רמז (${widget.hintsRemaining})"),
+                child: Text(tr('use_hint', namedArgs: {'count': '${widget.hintsRemaining}'})),
               ),
             if (showHint)
               Text(
@@ -158,7 +158,7 @@ class _GameQuestionState extends State<GameQuestion> with SingleTickerProviderSt
               scale: Tween<double>(begin: 0.0, end: 1.0).animate(_animController),
               child: Text(
                 feedback,
-                style: TextStyle(fontSize: 48, color: feedbackColor),
+                style: TextStyle(fontSize: 32, color: feedbackColor),
               ),
             ),
           ],
