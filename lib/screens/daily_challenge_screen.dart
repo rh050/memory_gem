@@ -1,8 +1,9 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:provider/provider.dart';
 import 'dart:ui' as flutter;
-
+import '../auth/auth_provider.dart';
 
 class DailyChallengeScreen extends StatefulWidget {
   const DailyChallengeScreen({super.key});
@@ -16,23 +17,34 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
   late String question;
   late int correctAnswer;
   String feedback = '';
-  late String language;
   bool _initialized = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_initialized) {
-      language = context.locale.languageCode == 'he' ? 'Hebrew' : 'English';
-      _generateQuestion();
+      _generateChallenge();
       _initialized = true;
     }
   }
 
-  void _generateQuestion() {
-    final Random random = Random();
-    final int a = random.nextInt(10) + 1;
-    final int b = random.nextInt(10) + 1;
+  int _getSeedForToday(String uid) {
+    final now = DateTime.now();
+    final dateHash = int.parse(
+        "${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}");
+    return uid.hashCode ^ dateHash;
+  }
+
+  void _generateChallenge() {
+    final profile = context.read<AuthProvider>().profile!;
+    final level = profile.level;
+    final uid = profile.uid;
+    final seed = _getSeedForToday(uid);
+    final rand = Random(seed);
+
+    final int a = rand.nextInt(10 + level * 5);
+    final int b = rand.nextInt(10 + level * 5);
+
     question = "$a + $b";
     correctAnswer = a + b;
     feedback = '';
@@ -40,18 +52,28 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
     setState(() {});
   }
 
-  void _checkAnswer() {
+  void _checkAnswer() async {
     final int? userAnswer = int.tryParse(_controller.text.trim());
+    final auth = context.read<AuthProvider>();
+
     if (userAnswer == correctAnswer) {
-      setState(() {
-        feedback = tr('correct');
+      setState(() => feedback = tr('correct'));
+      await auth.userDataService.updateUserFields(auth.user!.uid, {
+        'dailyCompleted': true,
+        'points': auth.profile!.points + 10,
       });
+
+      auth.profile = auth.profile!.copyWith(
+        dailyCompleted: true,
+        points: auth.profile!.points + 10,
+      );
+
+      await auth.userDataService.saveProfileToPrefs(auth.profile!);
     } else {
-      setState(() {
-        feedback = tr('wrong');
-      });
+      setState(() => feedback = tr('wrong'));
     }
-    Future.delayed(const Duration(seconds: 1), _generateQuestion);
+
+    Future.delayed(const Duration(seconds: 1), _generateChallenge);
   }
 
   @override

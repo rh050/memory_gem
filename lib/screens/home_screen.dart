@@ -41,7 +41,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Directionality(
-      textDirection: context.locale.languageCode == 'he' ? flutter.TextDirection.rtl : flutter.TextDirection.ltr,
+      textDirection: context.locale.languageCode == 'he'
+          ? flutter.TextDirection.rtl
+          : flutter.TextDirection.ltr,
       child: Scaffold(
         appBar: AppBar(
           title: Text(tr('app_title')),
@@ -69,8 +71,10 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(tr('welcome_back', namedArgs: {'name': playerName}),
-                  style: Theme.of(context).textTheme.headlineSmall),
+              Text(
+                tr('welcome_back', namedArgs: {'name': playerName}),
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () => context.push('/game'),
@@ -90,6 +94,18 @@ class _HomeScreenState extends State<HomeScreen> {
               ElevatedButton(
                 onPressed: () => context.push('/achievements'),
                 child: Text(tr('achievements')),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () => context.push('/profile'),
+                child: Text(tr('profile')),
+              ),
+              const SizedBox(height: 12),
+              // כפתור להגדרות
+              ElevatedButton.icon(
+                onPressed: () => context.push('/settings'),
+                icon: const Icon(Icons.settings),
+                label: Text(tr('settings')),
               ),
             ],
           ),
